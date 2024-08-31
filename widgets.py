@@ -1,8 +1,10 @@
-from textual.widgets import Digits
+from textual.widgets import Digits, Static
 from textual.reactive import var
 from textual.timer import Timer
+from textual.app import ComposeResult
 
 from typing import Optional
+
 from time import monotonic
 
 class CustomTimer(Digits):
@@ -12,7 +14,6 @@ class CustomTimer(Digits):
             background: $boost-darken-3;
             width: auto;
             padding: 1;
-            content-align: center middle;
             border: hkey $warning;
             border-title-align: center;
             border-title-style: bold italic;
@@ -69,3 +70,35 @@ class CustomTimer(Digits):
         self.start_time = None
         self.total_time = 0.0
         self.update_display()
+
+class SimpleCounter(Static):
+
+    DEFAULT_CSS = """
+       SimpleCounter {
+            background: $boost-darken-3;
+            width: 15;
+            align: center middle;
+            border: hkey $warning;
+            border-title-align: center;
+            border-title-style: bold italic;
+        
+            Digits {
+                background: $surface;
+                width: auto;
+                text-style: bold;
+                color: floralwhite;
+            }
+        }
+    """
+
+    BORDER_TITLE = "MOVES"
+
+    value = 0
+
+    def compose(self) -> ComposeResult:
+        self.counter_display = Digits(str(self.value))
+        yield self.counter_display
+
+    def increment(self) -> None:
+        self.value += 1
+        self.counter_display.update(str(self.value))

@@ -1,60 +1,50 @@
 from textual.app import App, ComposeResult
-from textual.containers import Vertical
-from textual.widgets import Digits
+from textual.widgets import Digits, Static
 from textual.widget import Widget
 from textual.reactive import var
+from textual.geometry import Offset
 
 
-class MyDigit(Widget):
+class SimpleCounter(Static):
 
     DEFAULT_CSS = """
-        MyDigit {
+       SimpleCounter {
+            background: $boost-darken-3;
+            width: 15;
+            align: center middle;
+            border: hkey $warning;
+            border-title-align: center;
+            border-title-style: bold italic;
         
-            Vertical {
-                width: 3;
-            }
-
-            #first {
-                height: 3;
-                background: lime;
-            }
-
-            #second {
-                height: auto;
-                background: skyblue;
+            Digits {
+                background: $surface;
+                width: auto;
+                text-style: bold;
+                color: floralwhite;
             }
         }
     """
 
-    current_value = var(0, init=False)
+    BORDER_TITLE = "MOVES"
+
+    value = 0
 
     def compose(self) -> ComposeResult:
-        with Vertical():
-            self.v_box = Vertical()
-            with self.v_box:
-                yield Digits(str(self.current_value))
-    
-    def add_one(self):
-        self.current_value += 1
+        self.counter_display = Digits(str(self.value))
+        yield self.counter_display
 
-    def watch_current_value(self, new):
-        self.v_box.mount(Digits(str(new)))
-        prev_offset = self.v_box.styles.offset
-        new_offset = -3
-        self.v_box.styles.animate("offset", value=new_offset, duration=0.5, on_complete=self.remove_prev_digit)
-        self.v_box.styles.offset = (0, 0)
-
-    def remove_prev_digit(self):
-        self.v_box.query(Digits).first().remove()
+    def increment(self) -> None:
+        self.value += 1
+        self.counter_display.update(str(self.value))
 
 
 class MyApp(App):
     def compose(self) -> ComposeResult:
-        self.widget = MyDigit()
+        self.widget = SimpleCounter()
         yield self.widget
 
     def on_key(self, event):
-        if event.key == "u":
-            self.widget.add_one()
+        if event.key == "i":
+            self.widget.increment()
 
 MyApp().run()
