@@ -1,50 +1,37 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Digits, Static
-from textual.widget import Widget
-from textual.reactive import var
-from textual.geometry import Offset
+from textual.widgets import Static
+from textual.containers import Grid
 
-
-class SimpleCounter(Static):
+class Cell(Static):
 
     DEFAULT_CSS = """
-       SimpleCounter {
-            background: $boost-darken-3;
-            width: 15;
-            align: center middle;
-            border: hkey $warning;
-            border-title-align: center;
-            border-title-style: bold italic;
-        
-            Digits {
-                background: $surface;
-                width: auto;
-                text-style: bold;
-                color: floralwhite;
-            }
+        Cell {
+            height: 3;
+            width: 3;
+            padding: 1;
+            color: $text;
         }
     """
 
-    BORDER_TITLE = "MOVES"
+class SudokuGrid3X3(Grid):
 
-    value = 0
+    DEFAULT_CSS = """
+        SudokuGrid3X3 {
+            grid-columns: 9;
+            
+            background: $background;
+            grid-gutter: 1;
+            border: solid blue;
+        }
+    """
 
     def compose(self) -> ComposeResult:
-        self.counter_display = Digits(str(self.value))
-        yield self.counter_display
-
-    def increment(self) -> None:
-        self.value += 1
-        self.counter_display.update(str(self.value))
-
+        self.cells = [Cell(str(index)) for index in range(1, 82)]
+        yield from self.cells
 
 class MyApp(App):
     def compose(self) -> ComposeResult:
-        self.widget = SimpleCounter()
-        yield self.widget
+        yield SudokuGrid3X3()
 
-    def on_key(self, event):
-        if event.key == "i":
-            self.widget.increment()
 
 MyApp().run()
