@@ -1,14 +1,13 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Static
+from textual.widgets import Digits
 from textual.containers import Grid
 
-class Cell(Static):
+class Cell(Digits):
 
     DEFAULT_CSS = """
         Cell {
             height: 3;
             width: 3;
-            padding: 1;
             color: $text;
         }
     """
@@ -17,7 +16,7 @@ class SudokuGrid3X3(Grid):
 
     DEFAULT_CSS = """
         SudokuGrid3X3 {
-            grid-columns: 9;
+            grid-size: 9;
             
             background: $background;
             grid-gutter: 1;
@@ -32,6 +31,9 @@ class SudokuGrid3X3(Grid):
 class MyApp(App):
     def compose(self) -> ComposeResult:
         yield SudokuGrid3X3()
+
+    def key_up(self):
+        self.notify(str(self.screen.size))
 
 
 MyApp().run()
